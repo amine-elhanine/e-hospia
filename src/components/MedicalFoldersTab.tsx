@@ -21,7 +21,6 @@ import {
   PRIORITY_STYLES,
   formatDateTime,
 } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface DoctorRef {
   id: string;
@@ -169,8 +168,8 @@ export default function MedicalFoldersTab({
     try {
       const headers = { "x-user-id": currentUser.id };
       const [patRes, profRes] = await Promise.all([
-        demoFetch("/api/patients", { headers }),
-        demoFetch("/api/profiles", { headers }),
+        fetch("/api/patients", { headers }),
+        fetch("/api/profiles", { headers }),
       ]);
 
       if (patRes.ok) {
@@ -249,7 +248,7 @@ export default function MedicalFoldersTab({
   const handleCreateCase = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activePatient) return;
-    const res = await demoFetch("/api/cases", {
+    const res = await fetch("/api/cases", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -290,7 +289,7 @@ export default function MedicalFoldersTab({
   const handleAssignDoctor = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeCase || !assignDocId) return;
-    const res = await demoFetch("/api/cases", {
+    const res = await fetch("/api/cases", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -314,7 +313,7 @@ export default function MedicalFoldersTab({
 
   const handleRemoveDoctor = async (doctorId: string) => {
     if (!activeCase) return;
-    const res = await demoFetch("/api/cases", {
+    const res = await fetch("/api/cases", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -338,7 +337,7 @@ export default function MedicalFoldersTab({
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeCase) return;
-    const res = await demoFetch("/api/cases", {
+    const res = await fetch("/api/cases", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -366,7 +365,7 @@ export default function MedicalFoldersTab({
   const handleAddVitals = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeCase) return;
-    const res = await demoFetch("/api/cases", {
+    const res = await fetch("/api/cases", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -395,7 +394,7 @@ export default function MedicalFoldersTab({
   const handleSaveCaseEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeCase) return;
-    const res = await demoFetch("/api/cases", {
+    const res = await fetch("/api/cases", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

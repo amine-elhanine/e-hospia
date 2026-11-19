@@ -1,0 +1,346 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== AUTHENTICATION & RBAC ====================
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  avatarColor  String   @default("#0284c7")
+  profileType  String   // DOCTOR | NURSE | ADMIN | FINANCIAL | PATIENT
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  sessions         Session[]
+  roles            UserRole[]
+  doctorProfile    DoctorProfile?
+  nurseProfile     NurseProfile?
+  adminProfile     AdminProfile?
+  financialProfile FinancialProfile?
+  patientProfile   PatientProfile?
+
+  clinicalNotes      ClinicalNote[]
+  sentMessages       DepartmentMessage[]
+  requestedTransfers DepartmentTransfer[]
+  handledInvoices    Invoice[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Role {
+  id          String @id @default(cuid())
+  code        String @unique
+  name        String
+  description String
+  profileType String // DOCTOR | NURSE | ADMIN | FINANCIAL | PATIENT
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  code        String @unique
+  name        String
+  category    String // DEPARTEMENTS | DOSSIER_MEDICAL | SOINS_CLINIQUES | PROFILS | FINANCES | SECURITE_RBAC | INTELLIGENCE_ARTIFICIELLE
+  description String
+
+  roles RolePermission[]
+}
+
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+// ==================== HOSPITAL DEPARTMENTS ====================
+
+model Department {
+  id             String @id @default(cuid())
+  code           String @unique // URGENCE | DECHOCAGE | REANIMATION | PSYCHIATRIE | PEDIATRIE | GYNECOLOGIE | MATERNITE | NEONAT
+  name           String
+  description    String
+  floor          String
+  phoneExtension String
+  totalBeds      Int
+  occupiedBeds   Int
+  alertLevel     String @default("NORMAL") // NORMAL | TENSION | CRITIQUE
+  color          String
+
+  doctors           DoctorProfile[]
+  nurses            NurseProfile[]
+  medicalCases      MedicalCase[]
+  outgoingMessages  DepartmentMessage[]  @relation("FromDepartmentMessages")
+  incomingMessages  DepartmentMessage[]  @relation("ToDepartmentMessages")
+  outgoingTransfers DepartmentTransfer[] @relation("FromDepartmentTransfers")
+  incomingTransfers DepartmentTransfer[] @relation("ToDepartmentTransfers")
+  invoices          Invoice[]
+}
+
+// ==================== ACTOR PROFILES ====================
+
+model DoctorProfile {
+  id           String @id @default(cuid())
+  userId       String @unique
+  departmentId String
+  rppsNumber   String @unique
+  specialty    String
+  grade        String
+  availability String @default("DISPONIBLE") // DISPONIBLE | EN_INTERVENTION | DE_GARDE | ABSENT
+  bio          String
+
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department        Department             @relation(fields: [departmentId], references: [id])
+  leadCases         MedicalCase[]          @relation("LeadDoctorCases")
+  assignedCases     CaseDoctorAssignment[]
+  targetedTransfers DepartmentTransfer[]
+}
+
+model NurseProfile {
+  id            String @id @default(cuid())
+  userId        String @unique
+  departmentId  String
+  matricule     String @unique
+  shift         String // MATIN | APRES_MIDI | NUIT
+  qualification String
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id])
+}
+
+model AdminProfile {
+  id        String @id @default(cuid())
+  userId    String @unique
+  matricule String @unique
+  position  String
+  office    String
+  scope     String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FinancialProfile {
+  id                 String @id @default(cuid())
+  userId             String @unique
+  matricule          String @unique
+  title              String
+  billingUnit        String
+  authorizationLimit Float
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PatientProfile {
+  id                    String @id @default(cuid())
+  userId                String @unique
+  folderNumber          String @unique
+  nationalId            String
+  birthDate             String
+  gender                String
+  bloodType             String
+  allergies             String
+  chronicConditions     String
+  emergencyContactName  String
+  emergencyContactPhone String
+  insuranceProvider     String
+  insuranceNumber       String
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalCases MedicalCase[]
+  invoices     Invoice[]
+}
+
+// ==================== MEDICAL FOLDER & MULTI-DOCTOR CASES ====================
+
+model MedicalCase {
+  id              String    @id @default(cuid())
+  caseNumber      String    @unique
+  patientId       String
+  departmentId    String
+  leadDoctorId    String
+  title           String
+  problemCategory String
+  diagnosis       String
+  symptoms        String
+  treatmentPlan   String
+  status          String    @default("ACTIF") // ACTIF | CRITIQUE | EN_OBSERVATION | CLOTURE
+  priority        String    @default("NORMALE") // NORMALE | HAUTE | URGENCE_VITALE
+  roomBed         String?
+  openedAt        DateTime  @default(now())
+  closedAt        DateTime?
+
+  patient         PatientProfile         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  department      Department             @relation(fields: [departmentId], references: [id])
+  leadDoctor      DoctorProfile          @relation("LeadDoctorCases", fields: [leadDoctorId], references: [id])
+  assignedDoctors CaseDoctorAssignment[]
+  clinicalNotes   ClinicalNote[]
+  vitalSignLogs   VitalSignLog[]
+  relatedMessages DepartmentMessage[]
+  transfers       DepartmentTransfer[]
+  invoices        Invoice[]
+}
+
+model CaseDoctorAssignment {
+  id            String   @id @default(cuid())
+  medicalCaseId String
+  doctorId      String
+  roleInCase    String
+  assignedAt    DateTime @default(now())
+
+  medicalCase MedicalCase   @relation(fields: [medicalCaseId], references: [id], onDelete: Cascade)
+  doctor      DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([medicalCaseId, doctorId])
+}
+
+model ClinicalNote {
+  id                  String   @id @default(cuid())
+  medicalCaseId       String
+  authorUserId        String
+  authorName          String
+  authorRole          String
+  noteType            String   // OBSERVATION | PRESCRIPTION | EXAMEN | CONSEIL_SPECIALISTE
+  content             String
+  prescriptionDetails String?
+  createdAt           DateTime @default(now())
+
+  medicalCase MedicalCase @relation(fields: [medicalCaseId], references: [id], onDelete: Cascade)
+  author      User        @relation(fields: [authorUserId], references: [id])
+}
+
+model VitalSignLog {
+  id               String   @id @default(cuid())
+  medicalCaseId    String
+  recordedByName   String
+  bloodPressure    String
+  heartRate        Int
+  temperature      Float
+  oxygenSaturation Int
+  notes            String?
+  recordedAt       DateTime @default(now())
+
+  medicalCase MedicalCase @relation(fields: [medicalCaseId], references: [id], onDelete: Cascade)
+}
+
+// ==================== INTER-DEPARTMENT COMMUNICATION & TRANSFERS ====================
+
+model DepartmentMessage {
+  id               String   @id @default(cuid())
+  fromDepartmentId String
+  toDepartmentId   String
+  senderUserId     String
+  senderName       String
+  senderRole       String
+  medicalCaseId    String?
+  subject          String
+  content          String
+  messageType      String   // AVIS_SPECIALISTE | ALERTE_URGENCE | DISPONIBILITE_LIT | COORDINATION
+  priority         String   @default("NORMALE") // NORMALE | URGENTE | CRITIQUE
+  status           String   @default("NON_LU") // NON_LU | LU | TRAITE
+  createdAt        DateTime @default(now())
+
+  fromDepartment Department   @relation("FromDepartmentMessages", fields: [fromDepartmentId], references: [id])
+  toDepartment   Department   @relation("ToDepartmentMessages", fields: [toDepartmentId], references: [id])
+  sender         User         @relation(fields: [senderUserId], references: [id])
+  medicalCase    MedicalCase? @relation(fields: [medicalCaseId], references: [id])
+}
+
+model DepartmentTransfer {
+  id                String    @id @default(cuid())
+  medicalCaseId     String
+  fromDepartmentId  String
+  toDepartmentId    String
+  requestedByUserId String
+  requestedByName   String
+  targetDoctorId    String?
+  reason            String
+  clinicalSummary   String
+  priority          String    @default("NORMALE") // NORMALE | URGENTE | VITALE
+  status            String    @default("EN_ATTENTE") // EN_ATTENTE | ACCEPTE | REFUSE
+  createdAt         DateTime  @default(now())
+  resolvedAt        DateTime?
+
+  medicalCase    MedicalCase    @relation(fields: [medicalCaseId], references: [id], onDelete: Cascade)
+  fromDepartment Department     @relation("FromDepartmentTransfers", fields: [fromDepartmentId], references: [id])
+  toDepartment   Department     @relation("ToDepartmentTransfers", fields: [toDepartmentId], references: [id])
+  requestedBy    User           @relation(fields: [requestedByUserId], references: [id])
+  targetDoctor   DoctorProfile? @relation(fields: [targetDoctorId], references: [id])
+}
+
+// ==================== FINANCIAL & BILLING ====================
+
+model Invoice {
+  id                    String    @id @default(cuid())
+  invoiceNumber         String    @unique
+  patientId             String
+  medicalCaseId         String?
+  departmentId          String
+  description           String
+  totalAmount           Float
+  insuranceCovered      Float
+  patientResponsibility Float
+  status                String    @default("EN_ATTENTE") // EN_ATTENTE | PAYEE | PRISE_EN_CHARGE | PARTIELLE
+  handledByUserId       String?
+  issuedAt              DateTime  @default(now())
+  paidAt                DateTime?
+
+  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  medicalCase MedicalCase?   @relation(fields: [medicalCaseId], references: [id])
+  department  Department     @relation(fields: [departmentId], references: [id])
+  handledBy   User?          @relation(fields: [handledByUserId], references: [id])
+}
+
+// ==================== AI SETTINGS & MODELS ====================
+
+model AiSetting {
+  id                   String @id @default("default")
+  activeModelId        String
+  hospitalSystemPrompt String
+  temperature          Float  @default(0.2)
+}
+
+model AiModel {
+  id          String   @id @default(cuid())
+  name        String
+  provider    String   // LOCAL_DEMO | GOOGLE_GEMINI | OPENAI_COMPATIBLE | MISTRAL | ANTHROPIC | OLLAMA_LOCAL
+  modelId     String
+  endpoint    String
+  apiKey      String   @default("")
+  description String
+  addedBy     String
+  createdAt   DateTime @default(now())
+}

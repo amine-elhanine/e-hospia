@@ -13,7 +13,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { AiModelConfig, AiPublicConfig, AuthUser } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface AiSettingsTabProps {
   currentUser: AuthUser;
@@ -64,7 +63,7 @@ export default function AiSettingsTab({
   const loadAiConfig = async () => {
     setLoading(true);
     try {
-      const res = await demoFetch("/api/ai", {
+      const res = await fetch("/api/ai", {
         headers: { "x-user-id": currentUser.id },
       });
       if (res.ok) {
@@ -113,7 +112,7 @@ export default function AiSettingsTab({
 
   const handleAddModel = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await demoFetch("/api/ai", {
+    const res = await fetch("/api/ai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -150,7 +149,7 @@ export default function AiSettingsTab({
   };
 
   const handleActivateModel = async (targetId: string, modelName: string) => {
-    const res = await demoFetch("/api/ai", {
+    const res = await fetch("/api/ai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -175,7 +174,7 @@ export default function AiSettingsTab({
   };
 
   const handleDeleteModel = async (targetId: string) => {
-    const res = await demoFetch("/api/ai", {
+    const res = await fetch("/api/ai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -198,7 +197,7 @@ export default function AiSettingsTab({
 
   const handleSaveGlobalSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await demoFetch("/api/ai", {
+    const res = await fetch("/api/ai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -221,7 +220,7 @@ export default function AiSettingsTab({
   };
 
   const handleSaveModelCredentials = async (targetId: string) => {
-    const res = await demoFetch("/api/ai", {
+    const res = await fetch("/api/ai", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -16,7 +16,6 @@ import {
   PRIORITY_STYLES,
   formatDateTime,
 } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface DeptMessage {
   id: string;
@@ -127,10 +126,10 @@ export default function CommunicationsTab({
   const loadData = async () => {
     const headers = { "x-user-id": currentUser.id };
     const [msgRes, trRes, patRes, profRes] = await Promise.all([
-      demoFetch("/api/communications", { headers }),
-      demoFetch("/api/transfers", { headers }),
-      demoFetch("/api/patients", { headers }),
-      demoFetch("/api/profiles", { headers }),
+      fetch("/api/communications", { headers }),
+      fetch("/api/transfers", { headers }),
+      fetch("/api/patients", { headers }),
+      fetch("/api/profiles", { headers }),
     ]);
 
     if (msgRes.ok) {
@@ -194,7 +193,7 @@ export default function CommunicationsTab({
     e.preventDefault();
     setSendingMsg(true);
     try {
-      const res = await demoFetch("/api/communications", {
+      const res = await fetch("/api/communications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -226,7 +225,7 @@ export default function CommunicationsTab({
   };
 
   const handleUpdateMsgStatus = async (id: string, status: string) => {
-    const res = await demoFetch("/api/communications", {
+    const res = await fetch("/api/communications", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -244,7 +243,7 @@ export default function CommunicationsTab({
     e.preventDefault();
     setSendingTransfer(true);
     try {
-      const res = await demoFetch("/api/transfers", {
+      const res = await fetch("/api/transfers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -278,7 +277,7 @@ export default function CommunicationsTab({
     id: string,
     status: "ACCEPTE" | "REFUSE"
   ) => {
-    const res = await demoFetch("/api/transfers", {
+    const res = await fetch("/api/transfers", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

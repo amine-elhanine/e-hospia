@@ -6,27 +6,20 @@ import {
   ArrowRightLeft,
   Bot,
   Building2,
-  ChevronDown,
-  Download,
-  ExternalLink,
-  FileJson,
   FolderHeart,
   Hospital,
   KeyRound,
   LayoutDashboard,
+  Lock,
   LogIn,
+  LogOut,
+  Mail,
   Receipt,
-  RotateCcw,
   ShieldCheck,
   Sparkles,
   Users,
   X,
 } from "lucide-react";
-import {
-  demoFetch,
-  downloadDemoJsonData,
-  resetDemoJsonData,
-} from "@/lib/demoStore";
 import {
   AiPublicConfig,
   AuthUser,
@@ -35,7 +28,6 @@ import {
   PROFILE_TYPE_LABELS,
   PermissionItem,
   RoleContext,
-  UserSwitchOption,
 } from "@/types/ehospia";
 import OverviewTab from "@/components/OverviewTab";
 import DepartmentsTab from "@/components/DepartmentsTab";
@@ -47,9 +39,22 @@ import RbacTab from "@/components/RbacTab";
 import AiSettingsTab from "@/components/AiSettingsTab";
 import AiAssistantDrawer from "@/components/AiAssistantDrawer";
 
+const VALID_TABS = new Set([
+  "overview",
+  "departments",
+  "communications",
+  "folders",
+  "profiles",
+  "billing",
+  "rbac",
+  "ai-settings",
+]);
+const ACTIVE_TAB_STORAGE_KEY = "ehospia_active_tab";
+const SELECTED_DEPT_STORAGE_KEY = "ehospia_selected_dept_id";
+const SELECTED_PATIENT_STORAGE_KEY = "ehospia_selected_patient_id";
+
 export default function EHospiaApp() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [allUsers, setAllUsers] = useState<UserSwitchOption[]>([]);
   const [departments, setDepartments] = useState<DepartmentSummary[]>([]);
   const [allPermissions, setAllPermissions] = useState<PermissionItem[]>([]);
   const [roleContext, setRoleContext] = useState<RoleContext>({});
@@ -60,14 +65,14 @@ export default function EHospiaApp() {
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
-  const [showSwitcher, setShowSwitcher] = useState(false);
   const [showPermInspector, setShowPermInspector] = useState(false);
-  const [showJsonMenu, setShowJsonMenu] = useState(false);
   const [showAiDrawer, setShowAiDrawer] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Login screen state
   const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("demo");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [submittingLogin, setSubmittingLogin] = useState(false);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -82,81 +87,144 @@ export default function EHospiaApp() {
     []
   );
 
-  const loadBootstrap = useCallback(async (overrideUserId?: string) => {
+  const loadBootstrap = useCallback(async () => {
     try {
-      const storedId =
-        overrideUserId ||
-        (typeof window !== "undefined"
-          ? window.localStorage.getItem("ehospia_user_id")
-          : null);
-
-      const res = await demoFetch("/api/bootstrap", {
-        headers: storedId ? { "x-user-id": storedId } : undefined,
+      const res = await fetch("/api/bootstrap", {
+        credentials: "include",
       });
+      if (res.status === 401) {
+        setCurrentUser(null);
+        setDepartments([]);
+        setAllPermissions([]);
+        setAiConfig(null);
+        setRoleContext({});
+        return;
+      }
       const data = await res.json();
       if (res.ok && data.currentUser) {
         setCurrentUser(data.currentUser);
-        setAllUsers(data.allUsers || []);
         setDepartments(data.departments || []);
         setAllPermissions(data.allPermissions || []);
         setAiConfig(data.aiConfig || null);
         setRoleContext(data.roleContext || {});
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem("ehospia_user_id", data.currentUser.id);
-        }
       }
     } finally {
       setLoading(false);
     }
   }, []);
 
+  const changeTab = useCallback((nextTab: string) => {
+    const safeTab = VALID_TABS.has(nextTab) ? nextTab : "overview";
+    setActiveTab(safeTab);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, safeTab);
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", safeTab);
+      window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+    }
+  }, []);
+
+  const selectDepartment = useCallback((deptId: string | null) => {
+    setSelectedDeptId(deptId);
+    if (typeof window !== "undefined") {
+      if (deptId) {
+        window.localStorage.setItem(SELECTED_DEPT_STORAGE_KEY, deptId);
+      } else {
+        window.localStorage.removeItem(SELECTED_DEPT_STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  const selectPatient = useCallback((patientId: string | null) => {
+    setSelectedPatientId(patientId);
+    if (typeof window !== "undefined") {
+      if (patientId) {
+        window.localStorage.setItem(SELECTED_PATIENT_STORAGE_KEY, patientId);
+      } else {
+        window.localStorage.removeItem(SELECTED_PATIENT_STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const syncFromClient = () => {
+      const params = new URLSearchParams(window.location.search);
+      const urlTab = params.get("tab");
+      const hashTab = window.location.hash.replace(/^#/, "");
+      const storedTab = window.localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+      const candidate = [urlTab, hashTab, storedTab].find(
+        (t): t is string => Boolean(t && VALID_TABS.has(t))
+      );
+      if (candidate) {
+        changeTab(candidate);
+      }
+
+      const storedDept = window.localStorage.getItem(SELECTED_DEPT_STORAGE_KEY);
+      if (storedDept) setSelectedDeptId(storedDept);
+      const storedPatient = window.localStorage.getItem(
+        SELECTED_PATIENT_STORAGE_KEY
+      );
+      if (storedPatient) setSelectedPatientId(storedPatient);
+    };
+
+    syncFromClient();
+    window.addEventListener("popstate", syncFromClient);
+    return () => window.removeEventListener("popstate", syncFromClient);
+  }, [changeTab]);
+
   useEffect(() => {
     loadBootstrap();
   }, [loadBootstrap]);
 
-  const handleSwitchUser = async (userId: string) => {
-    setShowSwitcher(false);
-    const res = await demoFetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    });
-    const data = await res.json();
-    if (res.ok && data.user) {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("ehospia_user_id", data.user.id);
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    setSubmittingLogin(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: loginEmail.trim(),
+          password: loginPassword,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || "Email ou mot de passe incorrect");
+        return;
       }
-      setCurrentUser(data.user);
-      setSelectedPatientId(null);
-      await loadBootstrap(data.user.id);
-      showToast(
-        `Connecté en tant que ${data.user.fullName} (${
-          PROFILE_TYPE_LABELS[data.user.profileType] || data.user.profileType
-        })`,
-        "success"
-      );
+      setLoginPassword("");
+      selectPatient(null);
+      selectDepartment(null);
+      changeTab("overview");
+      await loadBootstrap();
+      showToast(`Bienvenue, ${data.user.fullName}`, "success");
+    } finally {
+      setSubmittingLogin(false);
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = await demoFetch("/api/auth/login", {
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      credentials: "include",
     });
-    const data = await res.json();
-    if (!res.ok) {
-      showToast(data.error || "Identifiants invalides", "error");
-      return;
-    }
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("ehospia_user_id", data.user.id);
-    }
-    setShowLoginModal(false);
-    setCurrentUser(data.user);
-    await loadBootstrap(data.user.id);
-    showToast(`Bienvenue ${data.user.fullName}`, "success");
+    setCurrentUser(null);
+    setDepartments([]);
+    setAllPermissions([]);
+    setAiConfig(null);
+    setRoleContext({});
+    setShowAiDrawer(false);
+    setShowPermInspector(false);
+    selectPatient(null);
+    selectDepartment(null);
+    changeTab("overview");
+    setLoginEmail("");
+    setLoginPassword("");
+    setLoginError(null);
+    showToast("Session fermée avec succès", "success");
   };
 
   const perms = new Set(currentUser?.effectivePermissions || []);
@@ -192,10 +260,9 @@ export default function EHospiaApp() {
     },
     {
       id: "profiles",
-      label:
-        perms.has("profiles.view_directory")
-          ? "Profils Hospitaliers"
-          : "Mon Profil",
+      label: perms.has("profiles.view_directory")
+        ? "Profils Hospitaliers"
+        : "Mon Profil",
       icon: Users,
       visible: true,
     },
@@ -222,16 +289,16 @@ export default function EHospiaApp() {
     },
   ];
 
-  // Auto-fallback to overview if current tab becomes hidden after switching roles
   useEffect(() => {
+    if (!currentUser) return;
     const activeItem = navItems.find((i) => i.id === activeTab);
-    if (activeItem && !activeItem.visible) {
-      setActiveTab("overview");
+    if (!activeItem || !activeItem.visible) {
+      changeTab("overview");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser?.id, currentUser?.effectivePermissions.length]);
+  }, [currentUser?.id, currentUser?.effectivePermissions.length, activeTab, changeTab]);
 
-  if (loading || !currentUser) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
@@ -239,13 +306,120 @@ export default function EHospiaApp() {
             <Hospital className="h-8 w-8" />
           </div>
           <p className="mt-4 text-sm font-semibold text-slate-700">
-            Initialisation de la plateforme E-HOSPIA...
+            Vérification de la session E-HOSPIA...
           </p>
         </div>
       </div>
     );
   }
 
+  // ==================== AUTHENTICATION SCREEN ====================
+  if (!currentUser) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 p-4">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white p-8 shadow-2xl">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-600 text-white shadow-md">
+              <Hospital className="h-7 w-7" />
+            </div>
+            <div>
+              <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
+                E-HOSPIA
+              </h1>
+              <p className="text-xs font-medium text-sky-700">
+                Portail Hospitalier Sécurisé & RBAC
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <h2 className="text-lg font-bold text-slate-900">
+              Authentification requise
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              Connectez-vous avec votre email et votre mot de passe personnel pour
+              accéder à votre espace hospitalier selon vos rôles.
+            </p>
+          </div>
+
+          {loginError && (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-semibold text-red-700">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLoginSubmit} className="mt-5 space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700">
+                Adresse email
+              </label>
+              <div className="relative mt-1.5">
+                <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+                <input
+                  required
+                  type="email"
+                  autoComplete="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="nom@e-hospia.fr"
+                  className="w-full rounded-xl border border-slate-300 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700">
+                Mot de passe
+              </label>
+              <div className="relative mt-1.5">
+                <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+                <input
+                  required
+                  type="password"
+                  autoComplete="current-password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-slate-300 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submittingLogin}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-60"
+            >
+              <LogIn className="h-4 w-4" />
+              {submittingLogin ? "Connexion en cours..." : "Se connecter"}
+            </button>
+          </form>
+
+          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-[11px] leading-relaxed text-slate-600">
+            <strong className="text-slate-800">Accès par profil :</strong>{" "}
+            Administration, Médecins, Infirmiers, Finances et Patients disposent
+            chacun d&apos;identifiants dédiés documentés dans le fichier{" "}
+            <code className="font-mono font-semibold text-sky-700">
+              README.md
+            </code>
+            .
+          </div>
+        </div>
+
+        {toast && (
+          <div
+            className={`fixed bottom-5 right-5 z-50 rounded-xl px-4 py-3 text-xs font-semibold text-white shadow-xl ${
+              toast.type === "error" ? "bg-red-600" : "bg-slate-900"
+            }`}
+          >
+            {toast.message}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ==================== AUTHENTICATED APPLICATION ====================
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* Sidebar */}
@@ -273,7 +447,7 @@ export default function EHospiaApp() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => changeTab(item.id)}
                   className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition ${
                     isActive
                       ? "bg-sky-600 text-white shadow-sm"
@@ -298,7 +472,8 @@ export default function EHospiaApp() {
                 <span className="text-[10px] text-emerald-400">En ligne</span>
               </div>
               <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
-                Urgences • Déchocage • Réa • Psychiatrie • Pédiatrie • Gynéco • Maternité • Néonat
+                Urgences • Déchocage • Réa • Psychiatrie • Pédiatrie • Gynéco •
+                Maternité • Néonat
               </p>
             </div>
           ) : currentUser.profileType === "PATIENT" ? (
@@ -310,7 +485,8 @@ export default function EHospiaApp() {
                 </span>
               </div>
               <p className="mt-1.5 text-[11px] leading-relaxed text-slate-400">
-                Accès chiffré limité à votre profil médical, vos médecins et vos factures.
+                Accès chiffré limité à votre profil médical, vos médecins et vos
+                factures.
               </p>
             </div>
           ) : currentUser.profileType === "FINANCIAL" ? (
@@ -355,15 +531,13 @@ export default function EHospiaApp() {
               </div>
             </div>
 
-            {/* Right: AI Assistant + JSON Source Menu + Permissions Inspector + User Switcher */}
+            {/* Right: AI Assistant + Permissions Inspector + Authenticated User + Logout */}
             <div className="flex items-center gap-2.5">
               {perms.has("ai.use") && (
                 <button
                   onClick={() => {
                     setShowAiDrawer(true);
-                    setShowJsonMenu(false);
                     setShowPermInspector(false);
-                    setShowSwitcher(false);
                   }}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700"
                 >
@@ -376,73 +550,6 @@ export default function EHospiaApp() {
                   )}
                 </button>
               )}
-
-              {/* Demo JSON Data Menu */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setShowJsonMenu(!showJsonMenu);
-                    setShowPermInspector(false);
-                    setShowSwitcher(false);
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100"
-                >
-                  <FileJson className="h-3.5 w-3.5 text-emerald-600" />
-                  <span className="hidden md:inline">ehospia-data.json</span>
-                  <ChevronDown className="h-3.5 w-3.5 text-emerald-600" />
-                </button>
-
-                {showJsonMenu && (
-                  <div className="absolute right-0 z-50 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl">
-                    <div className="border-b border-slate-100 pb-2">
-                      <p className="text-xs font-bold text-slate-900">
-                        Mode Démo JSON (Sans BDD / Backend)
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
-                        Données chargées depuis <code>ehospia-data.json</code> et persistées localement.
-                      </p>
-                    </div>
-                    <div className="mt-2 space-y-1">
-                      <a
-                        href="/ehospia-data.json"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setShowJsonMenu(false)}
-                        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 text-sky-600" />
-                        Voir le fichier JSON source
-                      </a>
-                      <button
-                        onClick={() => {
-                          downloadDemoJsonData();
-                          setShowJsonMenu(false);
-                          showToast("Fichier ehospia-data.json téléchargé", "success");
-                        }}
-                        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                      >
-                        <Download className="h-3.5 w-3.5 text-emerald-600" />
-                        Télécharger l&apos;état JSON actuel
-                      </button>
-                      <button
-                        onClick={async () => {
-                          resetDemoJsonData();
-                          setShowJsonMenu(false);
-                          await loadBootstrap(currentUser.id);
-                          showToast(
-                            "Données réinitialisées depuis ehospia-data.json",
-                            "success"
-                          );
-                        }}
-                        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-xs font-semibold text-amber-700 hover:bg-amber-50"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5" />
-                        Réinitialiser le JSON démo
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
 
               {/* Active Permissions Pill */}
               <div className="relative">
@@ -459,7 +566,7 @@ export default function EHospiaApp() {
                 </button>
 
                 {showPermInspector && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl z-50">
+                  <div className="absolute right-0 z-50 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <span className="text-xs font-bold text-slate-900">
                         Permissions effectives de {currentUser.fullName}
@@ -498,101 +605,47 @@ export default function EHospiaApp() {
                 )}
               </div>
 
-              {/* Account Switcher Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowSwitcher(!showSwitcher)}
-                  className="inline-flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-left shadow-sm transition hover:border-sky-300"
+              {/* Authenticated User Badge */}
+              <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white"
+                  style={{ backgroundColor: currentUser.avatarColor }}
                 >
-                  <div
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white"
-                    style={{ backgroundColor: currentUser.avatarColor }}
-                  >
-                    {currentUser.fullName
-                      .replace("Dr. ", "")
-                      .replace("Inf. ", "")
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </div>
-                  <div className="hidden text-left md:block">
-                    <p className="text-xs font-bold text-slate-900">
-                      {currentUser.fullName}
-                    </p>
-                    <p className="text-[10px] font-semibold text-sky-700">
-                      {PROFILE_TYPE_LABELS[currentUser.profileType]} •{" "}
-                      {currentUser.roleNames[0]}
-                      {currentUser.roleNames.length > 1
-                        ? ` +${currentUser.roleNames.length - 1}`
-                        : ""}
-                    </p>
-                  </div>
-                  <ChevronDown className="h-4 w-4 text-slate-400" />
-                </button>
-
-                {showSwitcher && (
-                  <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl z-50">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <span className="text-xs font-bold text-slate-900">
-                        Tester un profil / Changer de compte
-                      </span>
-                      <button
-                        onClick={() => {
-                          setShowSwitcher(false);
-                          setShowLoginModal(true);
-                        }}
-                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-600 hover:text-sky-700"
-                      >
-                        <LogIn className="h-3 w-3" />
-                        Connexion email
-                      </button>
-                    </div>
-                    <div className="mt-2 max-h-96 space-y-1 overflow-y-auto">
-                      {allUsers.map((u) => {
-                        const active = u.id === currentUser.id;
-                        return (
-                          <button
-                            key={u.id}
-                            onClick={() => handleSwitchUser(u.id)}
-                            className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left transition ${
-                              active
-                                ? "bg-sky-50 ring-1 ring-sky-200"
-                                : "hover:bg-slate-50"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <div
-                                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold text-white"
-                                style={{ backgroundColor: u.avatarColor }}
-                              >
-                                {u.fullName
-                                  .replace("Dr. ", "")
-                                  .replace("Inf. ", "")
-                                  .slice(0, 2)
-                                  .toUpperCase()}
-                              </div>
-                              <div>
-                                <p className="text-xs font-bold text-slate-900">
-                                  {u.fullName}
-                                </p>
-                                <p className="text-[10px] text-slate-500">
-                                  {u.roles.map((r) => r.name).join(" + ")}
-                                </p>
-                              </div>
-                            </div>
-                            <span
-                              className={`rounded-full border px-2 py-0.5 text-[9px] font-bold ${
-                                PROFILE_TYPE_BADGES[u.profileType] || ""
-                              }`}
-                            >
-                              {PROFILE_TYPE_LABELS[u.profileType]}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                  {currentUser.fullName
+                    .replace("Dr. ", "")
+                    .replace("Inf. ", "")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </div>
+                <div className="hidden text-left md:block">
+                  <p className="text-xs font-bold text-slate-900">
+                    {currentUser.fullName}
+                  </p>
+                  <p className="text-[10px] font-semibold text-sky-700">
+                    <span
+                      className={`mr-1 rounded px-1 py-0.5 text-[9px] font-bold ${
+                        PROFILE_TYPE_BADGES[currentUser.profileType] || ""
+                      }`}
+                    >
+                      {PROFILE_TYPE_LABELS[currentUser.profileType]}
+                    </span>
+                    {currentUser.roleNames[0]}
+                    {currentUser.roleNames.length > 1
+                      ? ` +${currentUser.roleNames.length - 1}`
+                      : ""}
+                  </p>
+                </div>
               </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                title="Se déconnecter"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Déconnexion</span>
+              </button>
             </div>
           </div>
 
@@ -606,7 +659,7 @@ export default function EHospiaApp() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() => changeTab(item.id)}
                     className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${
                       isActive
                         ? "bg-sky-600 text-white"
@@ -628,8 +681,8 @@ export default function EHospiaApp() {
               currentUser={currentUser}
               departments={departments}
               roleContext={roleContext}
-              onNavigateTab={(tab) => setActiveTab(tab)}
-              onSelectDepartment={(deptId) => setSelectedDeptId(deptId)}
+              onNavigateTab={(tab) => changeTab(tab)}
+              onSelectDepartment={(deptId) => selectDepartment(deptId)}
             />
           )}
 
@@ -637,13 +690,13 @@ export default function EHospiaApp() {
             <DepartmentsTab
               currentUser={currentUser}
               selectedDepartmentId={selectedDeptId}
-              onSelectDepartment={(deptId) => setSelectedDeptId(deptId)}
+              onSelectDepartment={(deptId) => selectDepartment(deptId)}
               onOpenPatientFolder={(patientId) => {
-                setSelectedPatientId(patientId);
-                setActiveTab("folders");
+                selectPatient(patientId);
+                changeTab("folders");
               }}
               onToast={showToast}
-              onRefreshBootstrap={() => loadBootstrap(currentUser.id)}
+              onRefreshBootstrap={loadBootstrap}
             />
           )}
 
@@ -652,7 +705,7 @@ export default function EHospiaApp() {
               currentUser={currentUser}
               departments={departments}
               onToast={showToast}
-              onRefreshBootstrap={() => loadBootstrap(currentUser.id)}
+              onRefreshBootstrap={loadBootstrap}
             />
           )}
 
@@ -662,7 +715,7 @@ export default function EHospiaApp() {
               departments={departments}
               initialPatientId={selectedPatientId}
               onToast={showToast}
-              onRefreshBootstrap={() => loadBootstrap(currentUser.id)}
+              onRefreshBootstrap={loadBootstrap}
             />
           )}
 
@@ -671,11 +724,11 @@ export default function EHospiaApp() {
               currentUser={currentUser}
               departments={departments}
               onOpenPatientFolder={(patientId) => {
-                setSelectedPatientId(patientId);
-                setActiveTab("folders");
+                selectPatient(patientId);
+                changeTab("folders");
               }}
               onToast={showToast}
-              onRefreshBootstrap={() => loadBootstrap(currentUser.id)}
+              onRefreshBootstrap={loadBootstrap}
             />
           )}
 
@@ -691,7 +744,7 @@ export default function EHospiaApp() {
             <RbacTab
               currentUser={currentUser}
               onToast={showToast}
-              onRefreshBootstrap={() => loadBootstrap(currentUser.id)}
+              onRefreshBootstrap={loadBootstrap}
             />
           )}
 
@@ -699,7 +752,7 @@ export default function EHospiaApp() {
             <AiSettingsTab
               currentUser={currentUser}
               onToast={showToast}
-              onRefreshBootstrap={() => loadBootstrap(currentUser.id)}
+              onRefreshBootstrap={loadBootstrap}
             />
           )}
         </main>
@@ -710,63 +763,8 @@ export default function EHospiaApp() {
         onClose={() => setShowAiDrawer(false)}
         currentUser={currentUser}
         aiConfig={aiConfig}
-        onOpenAiSettings={() => setActiveTab("ai-settings")}
+        onOpenAiSettings={() => changeTab("ai-settings")}
       />
-
-      {/* Login Modal */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">
-                Connexion E-HOSPIA
-              </h3>
-              <button
-                onClick={() => setShowLoginModal(false)}
-                className="text-slate-400 hover:text-slate-700"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <p className="mt-1 text-xs text-slate-500">
-              Mot de passe démo pour tous les comptes : <code>demo</code>
-            </p>
-            <form onSubmit={handleEmailLogin} className="mt-4 space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700">
-                  Email professionnel ou patient
-                </label>
-                <input
-                  required
-                  type="email"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="dr.mansouri@e-hospia.fr"
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-700">
-                  Mot de passe
-                </label>
-                <input
-                  required
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-sky-700"
-              >
-                Se connecter
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Toast Notification */}
       {toast && (

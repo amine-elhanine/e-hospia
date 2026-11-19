@@ -19,7 +19,6 @@ import {
   RoleSummary,
   formatCurrency,
 } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface DirectoryProfile {
   id: string;
@@ -93,6 +92,7 @@ export default function ProfilesTab({
   // Create form
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newType, setNewType] = useState("DOCTOR");
   const [newDeptId, setNewDeptId] = useState(departments[0]?.id || "");
@@ -102,7 +102,7 @@ export default function ProfilesTab({
   const canManage = currentUser.effectivePermissions.includes("profiles.manage");
 
   const loadProfiles = async () => {
-    const res = await demoFetch("/api/profiles", {
+    const res = await fetch("/api/profiles", {
       headers: { "x-user-id": currentUser.id },
     });
     if (res.ok) {
@@ -120,7 +120,7 @@ export default function ProfilesTab({
     targetUserId: string,
     availability: string
   ) => {
-    const res = await demoFetch("/api/profiles", {
+    const res = await fetch("/api/profiles", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -139,7 +139,7 @@ export default function ProfilesTab({
 
   const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await demoFetch("/api/profiles", {
+    const res = await fetch("/api/profiles", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -148,6 +148,7 @@ export default function ProfilesTab({
       body: JSON.stringify({
         fullName: newName,
         email: newEmail,
+        password: newPassword || undefined,
         phone: newPhone,
         profileType: newType,
         departmentId: newDeptId || departments[0]?.id,
@@ -170,6 +171,7 @@ export default function ProfilesTab({
     setShowCreateModal(false);
     setNewName("");
     setNewEmail("");
+    setNewPassword("");
     setNewPhone("");
     setNewDetail1("");
     setNewDetail2("");
@@ -443,14 +445,26 @@ export default function ProfilesTab({
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700">
-                    Téléphone
+                    Mot de passe (défaut: Ehospia@2026)
                   </label>
                   <input
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
                     className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700">
+                  Téléphone
+                </label>
+                <input
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"
+                />
               </div>
 
               {(newType === "DOCTOR" || newType === "NURSE") && (

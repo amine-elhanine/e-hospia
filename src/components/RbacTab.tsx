@@ -8,7 +8,6 @@ import {
   PROFILE_TYPE_LABELS,
   PermissionItem,
 } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface RbacRole {
   id: string;
@@ -57,7 +56,7 @@ export default function RbacTab({
   const canManageRbac = currentUser.effectivePermissions.includes("rbac.manage");
 
   const loadRbac = async () => {
-    const res = await demoFetch("/api/rbac", {
+    const res = await fetch("/api/rbac", {
       headers: { "x-user-id": currentUser.id },
     });
     if (res.ok) {
@@ -78,7 +77,7 @@ export default function RbacTab({
       onToast("Permission rbac.manage requise", "error");
       return;
     }
-    const res = await demoFetch("/api/rbac", {
+    const res = await fetch("/api/rbac", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +103,7 @@ export default function RbacTab({
       onToast("Permission rbac.manage requise", "error");
       return;
     }
-    const res = await demoFetch("/api/rbac", {
+    const res = await fetch("/api/rbac", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -128,7 +127,7 @@ export default function RbacTab({
 
   const handleCreateRole = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await demoFetch("/api/rbac", {
+    const res = await fetch("/api/rbac", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

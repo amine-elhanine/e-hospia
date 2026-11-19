@@ -11,7 +11,6 @@ import {
   X,
 } from "lucide-react";
 import { AiPublicConfig, AuthUser, PROFILE_TYPE_LABELS } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface ChatMessage {
   id: string;
@@ -222,7 +221,7 @@ export default function AiAssistantDrawer({
     setLoading(true);
 
     try {
-      const res = await demoFetch("/api/ai", {
+      const res = await fetch("/api/ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

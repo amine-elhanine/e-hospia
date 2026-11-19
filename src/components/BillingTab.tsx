@@ -8,7 +8,6 @@ import {
   formatCurrency,
   formatDateTime,
 } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface InvoiceItem {
   id: string;
@@ -68,7 +67,7 @@ export default function BillingTab({
 
   const loadBilling = async () => {
     const headers = { "x-user-id": currentUser.id };
-    const bRes = await demoFetch("/api/billing", { headers });
+    const bRes = await fetch("/api/billing", { headers });
 
     if (bRes.ok) {
       const data = await bRes.json();
@@ -96,7 +95,7 @@ export default function BillingTab({
 
   const handleCreateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await demoFetch("/api/billing", {
+    const res = await fetch("/api/billing", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -122,7 +121,7 @@ export default function BillingTab({
   };
 
   const handleUpdateStatus = async (id: string, status: string) => {
-    const res = await demoFetch("/api/billing", {
+    const res = await fetch("/api/billing", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

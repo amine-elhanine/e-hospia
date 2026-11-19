@@ -17,7 +17,6 @@ import {
   CASE_STATUS_STYLES,
   DepartmentSummary,
 } from "@/types/ehospia";
-import { demoFetch } from "@/lib/demoStore";
 
 interface DepartmentDetail extends DepartmentSummary {
   doctors: Array<{
@@ -102,7 +101,7 @@ export default function DepartmentsTab({
   const loadDepartments = async () => {
     setLoading(true);
     try {
-      const res = await demoFetch("/api/departments", {
+      const res = await fetch("/api/departments", {
         headers: { "x-user-id": currentUser.id },
       });
       const data = await res.json();
@@ -143,7 +142,7 @@ export default function DepartmentsTab({
     if (!activeDept) return;
     setSaving(true);
     try {
-      const res = await demoFetch("/api/departments", {
+      const res = await fetch("/api/departments", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
