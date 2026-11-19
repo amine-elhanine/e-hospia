@@ -1,0 +1,1192 @@
+{
+  "departments": [
+    {
+      "id": "dept-urgence",
+      "code": "URGENCE",
+      "name": "Urgences",
+      "description": "Accueil, triage IOA et prise en charge des urgences médico-chirurgicales 24h/24.",
+      "floor": "Rez-de-chaussée — Aile Nord",
+      "phoneExtension": "1100",
+      "totalBeds": 28,
+      "occupiedBeds": 22,
+      "alertLevel": "TENSION",
+      "color": "#ef4444"
+    },
+    {
+      "id": "dept-dechocage",
+      "code": "DECHOCAGE",
+      "name": "Déchocage",
+      "description": "Salle d'accueil des urgences vitales (SAUV) et stabilisation immédiate des polytraumatisés.",
+      "floor": "Rez-de-chaussée — Zone Rouge",
+      "phoneExtension": "1105",
+      "totalBeds": 8,
+      "occupiedBeds": 5,
+      "alertLevel": "CRITIQUE",
+      "color": "#dc2626"
+    },
+    {
+      "id": "dept-reanimation",
+      "code": "REANIMATION",
+      "name": "Réanimation",
+      "description": "Soins intensifs polyvalents, ventilation mécanique et surveillance continue des défaillances d'organes.",
+      "floor": "1er Étage — Aile Critique",
+      "phoneExtension": "1200",
+      "totalBeds": 18,
+      "occupiedBeds": 14,
+      "alertLevel": "TENSION",
+      "color": "#f97316"
+    },
+    {
+      "id": "dept-psychiatrie",
+      "code": "PSYCHIATRIE",
+      "name": "Psychiatrie",
+      "description": "Psychiatrie de liaison, urgences psychiatriques, accompagnement périnatal et suivi post-traumatique.",
+      "floor": "2e Étage — Aile Est",
+      "phoneExtension": "1300",
+      "totalBeds": 24,
+      "occupiedBeds": 15,
+      "alertLevel": "NORMAL",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": "dept-pediatrie",
+      "code": "PEDIATRIE",
+      "name": "Pédiatrie",
+      "description": "Hospitalisation pédiatrique générale, urgences infantiles et pathologies respiratoires de l'enfant.",
+      "floor": "3e Étage — Aile Sud",
+      "phoneExtension": "1400",
+      "totalBeds": 30,
+      "occupiedBeds": 19,
+      "alertLevel": "NORMAL",
+      "color": "#0ea5e9"
+    },
+    {
+      "id": "dept-gynecologie",
+      "code": "GYNECOLOGIE",
+      "name": "Gynécologie",
+      "description": "Chirurgie gynécologique, urgences pelviennes, suivi des pathologies gynécologiques complexes.",
+      "floor": "4e Étage — Aile Ouest",
+      "phoneExtension": "1500",
+      "totalBeds": 20,
+      "occupiedBeds": 11,
+      "alertLevel": "NORMAL",
+      "color": "#ec4899"
+    },
+    {
+      "id": "dept-maternite",
+      "code": "MATERNITE",
+      "name": "Maternité",
+      "description": "Obstétrique, grossesses à haut risque, salles de naissance et suites de couches.",
+      "floor": "4e Étage — Aile Sud",
+      "phoneExtension": "1550",
+      "totalBeds": 26,
+      "occupiedBeds": 18,
+      "alertLevel": "NORMAL",
+      "color": "#f43f5e"
+    },
+    {
+      "id": "dept-neonat",
+      "code": "NEONAT",
+      "name": "Néonatologie",
+      "description": "Réanimation néonatale, couveuses pour prématurés et soins intensifs du nouveau-né.",
+      "floor": "4e Étage — Unité Protégée",
+      "phoneExtension": "1580",
+      "totalBeds": 16,
+      "occupiedBeds": 12,
+      "alertLevel": "TENSION",
+      "color": "#14b8a6"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "perm-departments-view",
+      "code": "departments.view",
+      "name": "Voir les départements",
+      "category": "DEPARTEMENTS",
+      "description": "Consulter la liste des 8 départements, leur capacité en lits et niveau d'alerte."
+    },
+    {
+      "id": "perm-departments-communicate",
+      "code": "departments.communicate",
+      "name": "Communication inter-services",
+      "category": "DEPARTEMENTS",
+      "description": "Envoyer des messages, demandes d'avis spécialisé et alertes entre départements."
+    },
+    {
+      "id": "perm-departments-transfer",
+      "code": "departments.transfer",
+      "name": "Transferts inter-services",
+      "category": "DEPARTEMENTS",
+      "description": "Initier, accepter ou refuser un transfert de patient entre départements."
+    },
+    {
+      "id": "perm-departments-manage",
+      "code": "departments.manage",
+      "name": "Gérer les services",
+      "category": "DEPARTEMENTS",
+      "description": "Modifier la capacité en lits et le niveau d'alerte opérationnelle d'un service."
+    },
+    {
+      "id": "perm-folder-view-all",
+      "code": "folder.view_all",
+      "name": "Consulter tous les dossiers médicaux",
+      "category": "DOSSIER_MEDICAL",
+      "description": "Accéder aux dossiers médicaux complets des patients et à leurs cas actifs."
+    },
+    {
+      "id": "perm-folder-view-own",
+      "code": "folder.view_own",
+      "name": "Consulter son propre dossier",
+      "category": "DOSSIER_MEDICAL",
+      "description": "Permet au patient de consulter son profil, ses cas médicaux et ses médecins."
+    },
+    {
+      "id": "perm-case-create",
+      "code": "case.create",
+      "name": "Ouvrir un cas médical",
+      "category": "DOSSIER_MEDICAL",
+      "description": "Créer un nouveau cas médical pour un problème de santé spécifique du patient."
+    },
+    {
+      "id": "perm-case-edit",
+      "code": "case.edit",
+      "name": "Modifier un cas médical",
+      "category": "DOSSIER_MEDICAL",
+      "description": "Mettre à jour le diagnostic, le statut, la priorité et le plan de traitement."
+    },
+    {
+      "id": "perm-case-assign-doctor",
+      "code": "case.assign_doctor",
+      "name": "Affecter des médecins spécialistes",
+      "category": "DOSSIER_MEDICAL",
+      "description": "Associer plusieurs médecins spécialistes en collaboration sur un cas médical."
+    },
+    {
+      "id": "perm-clinical-note-create",
+      "code": "clinical_note.create",
+      "name": "Rédiger notes & prescriptions",
+      "category": "SOINS_CLINIQUES",
+      "description": "Ajouter des observations cliniques, examens et prescriptions médicales."
+    },
+    {
+      "id": "perm-vitals-record",
+      "code": "vitals.record",
+      "name": "Saisir les constantes vitales",
+      "category": "SOINS_CLINIQUES",
+      "description": "Enregistrer la tension, fréquence cardiaque, SpO2 et température du patient."
+    },
+    {
+      "id": "perm-profiles-view-directory",
+      "code": "profiles.view_directory",
+      "name": "Consulter l'annuaire des profils",
+      "category": "PROFILS",
+      "description": "Voir les profils des médecins, infirmiers, administration, finance et patients."
+    },
+    {
+      "id": "perm-profiles-manage",
+      "code": "profiles.manage",
+      "name": "Gérer les profils hospitaliers",
+      "category": "PROFILS",
+      "description": "Créer ou mettre à jour les profils et disponibilités des acteurs hospitaliers."
+    },
+    {
+      "id": "perm-billing-view-all",
+      "code": "billing.view_all",
+      "name": "Voir toute la facturation",
+      "category": "FINANCES",
+      "description": "Accéder à l'ensemble des factures, prises en charge mutuelles et recettes."
+    },
+    {
+      "id": "perm-billing-view-own",
+      "code": "billing.view_own",
+      "name": "Voir ses propres factures",
+      "category": "FINANCES",
+      "description": "Permet au patient de consulter l'état de ses propres factures hospitalières."
+    },
+    {
+      "id": "perm-billing-manage",
+      "code": "billing.manage",
+      "name": "Émettre et encaisser les factures",
+      "category": "FINANCES",
+      "description": "Créer des factures, valider les prises en charge et enregistrer les paiements."
+    },
+    {
+      "id": "perm-rbac-manage",
+      "code": "rbac.manage",
+      "name": "Gérer les rôles et permissions",
+      "category": "SECURITE_RBAC",
+      "description": "Configurer la matrice RBAC, créer des rôles et attribuer des rôles aux utilisateurs."
+    },
+    {
+      "id": "perm-ai-use",
+      "code": "ai.use",
+      "name": "Utiliser l'Assistant IA E-HOSPIA",
+      "category": "INTELLIGENCE_ARTIFICIELLE",
+      "description": "Interroger le modèle d'IA actif de l'hôpital dans le périmètre strict de ses permissions RBAC."
+    },
+    {
+      "id": "perm-ai-manage",
+      "code": "ai.manage",
+      "name": "Configurer et ajouter des modèles IA (Admin)",
+      "category": "INTELLIGENCE_ARTIFICIELLE",
+      "description": "Ajouter des modèles IA, définir le modèle global actif et paramétrer le prompt système."
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-admin",
+      "code": "ROLE_ADMIN",
+      "name": "Direction & Administration",
+      "description": "Pilotage général de l'hôpital, gestion des services, capacité en lits, annuaire et contrôle d'accès RBAC (hors secret médical clinique).",
+      "profileType": "ADMIN",
+      "permissionIds": [
+        "perm-departments-view",
+        "perm-departments-communicate",
+        "perm-departments-manage",
+        "perm-profiles-view-directory",
+        "perm-profiles-manage",
+        "perm-billing-view-all",
+        "perm-rbac-manage",
+        "perm-ai-use",
+        "perm-ai-manage"
+      ]
+    },
+    {
+      "id": "role-chef-service",
+      "code": "ROLE_CHEF_SERVICE",
+      "name": "Chef de Service Médical",
+      "description": "Coordination médicale d'un pôle, gestion de la capacité des lits et validation des transferts critiques.",
+      "profileType": "DOCTOR",
+      "permissionIds": [
+        "perm-departments-view",
+        "perm-departments-communicate",
+        "perm-departments-transfer",
+        "perm-departments-manage",
+        "perm-folder-view-all",
+        "perm-case-create",
+        "perm-case-edit",
+        "perm-case-assign-doctor",
+        "perm-clinical-note-create",
+        "perm-vitals-record",
+        "perm-profiles-view-directory",
+        "perm-ai-use"
+      ]
+    },
+    {
+      "id": "role-medecin",
+      "code": "ROLE_MEDECIN",
+      "name": "Médecin Spécialiste",
+      "description": "Prise en charge des cas médicaux, prescriptions, coordination inter-services et dossiers patients.",
+      "profileType": "DOCTOR",
+      "permissionIds": [
+        "perm-departments-view",
+        "perm-departments-communicate",
+        "perm-departments-transfer",
+        "perm-folder-view-all",
+        "perm-case-create",
+        "perm-case-edit",
+        "perm-case-assign-doctor",
+        "perm-clinical-note-create",
+        "perm-vitals-record",
+        "perm-profiles-view-directory",
+        "perm-ai-use"
+      ]
+    },
+    {
+      "id": "role-infirmier",
+      "code": "ROLE_INFIRMIER",
+      "name": "Infirmier(e) Diplômé(e) d'État",
+      "description": "Soins infirmiers, relevé des constantes vitales, consultation des dossiers et suivi de la capacité en lits des services.",
+      "profileType": "NURSE",
+      "permissionIds": [
+        "perm-departments-view",
+        "perm-departments-communicate",
+        "perm-folder-view-all",
+        "perm-clinical-note-create",
+        "perm-vitals-record",
+        "perm-profiles-view-directory",
+        "perm-ai-use"
+      ]
+    },
+    {
+      "id": "role-finance",
+      "code": "ROLE_FINANCE",
+      "name": "Cadre Financier & Facturation",
+      "description": "Gestion des factures hospitalières, couvertures assurance/mutuelle et encaissements (sans accès clinique ni capacité des services).",
+      "profileType": "FINANCIAL",
+      "permissionIds": [
+        "perm-billing-view-all",
+        "perm-billing-manage",
+        "perm-ai-use"
+      ]
+    },
+    {
+      "id": "role-patient",
+      "code": "ROLE_PATIENT",
+      "name": "Portail Patient",
+      "description": "Accès personnel confidentiel à son propre dossier médical, ses médecins et ses factures (aucun accès aux données de l'hôpital).",
+      "profileType": "PATIENT",
+      "permissionIds": [
+        "perm-folder-view-own",
+        "perm-billing-view-own",
+        "perm-ai-use"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "user-admin",
+      "email": "admin@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Hélène Valéry",
+      "phone": "+33 1 45 20 10 01",
+      "avatarColor": "#0f172a",
+      "profileType": "ADMIN",
+      "isActive": true,
+      "roleIds": ["role-admin"],
+      "adminProfile": {
+        "id": "adm-1",
+        "matricule": "ADM-2019-001",
+        "position": "Directrice Générale & Administratrice RBAC",
+        "office": "Bâtiment Direction — Bureau 101",
+        "scope": "Gouvernance globale des 8 départements & Habilitations"
+      }
+    },
+    {
+      "id": "user-dr-mansouri",
+      "email": "dr.mansouri@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Dr. Karim Mansouri",
+      "phone": "+33 1 45 20 11 02",
+      "avatarColor": "#dc2626",
+      "profileType": "DOCTOR",
+      "isActive": true,
+      "roleIds": ["role-chef-service", "role-medecin"],
+      "doctorProfile": {
+        "id": "doc-mansouri",
+        "departmentId": "dept-urgence",
+        "rppsNumber": "RPPS-10004582101",
+        "specialty": "Médecine d'Urgence & Déchocage",
+        "grade": "Chef de Pôle Urgences / Déchocage",
+        "availability": "DE_GARDE",
+        "bio": "Responsable de la coordination entre les Urgences, le Déchocage et la Réanimation."
+      }
+    },
+    {
+      "id": "user-dr-laurent",
+      "email": "dr.laurent@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Dr. Sophie Laurent",
+      "phone": "+33 1 45 20 15 51",
+      "avatarColor": "#ec4899",
+      "profileType": "DOCTOR",
+      "isActive": true,
+      "roleIds": ["role-medecin"],
+      "doctorProfile": {
+        "id": "doc-laurent",
+        "departmentId": "dept-maternite",
+        "rppsNumber": "RPPS-10004582102",
+        "specialty": "Gynécologie-Obstétrique",
+        "grade": "Praticien Hospitalier",
+        "availability": "DISPONIBLE",
+        "bio": "Spécialiste des grossesses gémellaires et pathologies obstétricales à haut risque."
+      }
+    },
+    {
+      "id": "user-dr-benali",
+      "email": "dr.benali@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Dr. Mehdi Benali",
+      "phone": "+33 1 45 20 12 03",
+      "avatarColor": "#ea580c",
+      "profileType": "DOCTOR",
+      "isActive": true,
+      "roleIds": ["role-chef-service", "role-medecin"],
+      "doctorProfile": {
+        "id": "doc-benali",
+        "departmentId": "dept-reanimation",
+        "rppsNumber": "RPPS-10004582103",
+        "specialty": "Anesthésie-Réanimation",
+        "grade": "Chef de Service Réanimation",
+        "availability": "EN_INTERVENTION",
+        "bio": "Réanimateur polyvalent, référent pour les transferts critiques depuis le Déchocage."
+      }
+    },
+    {
+      "id": "user-dr-moreau",
+      "email": "dr.moreau@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Dr. Claire Moreau",
+      "phone": "+33 1 45 20 14 04",
+      "avatarColor": "#0284c7",
+      "profileType": "DOCTOR",
+      "isActive": true,
+      "roleIds": ["role-medecin"],
+      "doctorProfile": {
+        "id": "doc-moreau",
+        "departmentId": "dept-neonat",
+        "rppsNumber": "RPPS-10004582104",
+        "specialty": "Pédiatrie & Néonatologie",
+        "grade": "Praticien Hospitalier",
+        "availability": "DISPONIBLE",
+        "bio": "Double compétence pédiatrie générale et réanimation néonatale."
+      }
+    },
+    {
+      "id": "user-dr-garnier",
+      "email": "dr.garnier@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Dr. Antoine Garnier",
+      "phone": "+33 1 45 20 13 05",
+      "avatarColor": "#7c3aed",
+      "profileType": "DOCTOR",
+      "isActive": true,
+      "roleIds": ["role-medecin"],
+      "doctorProfile": {
+        "id": "doc-garnier",
+        "departmentId": "dept-psychiatrie",
+        "rppsNumber": "RPPS-10004582105",
+        "specialty": "Psychiatrie de Liaison & Périnatale",
+        "grade": "Praticien Hospitalier",
+        "availability": "DISPONIBLE",
+        "bio": "Intervient en liaison dans tous les services (Maternité, Réanimation, Pédiatrie)."
+      }
+    },
+    {
+      "id": "user-dr-khelifi",
+      "email": "dr.khelifi@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Dr. Nadia Khelifi",
+      "phone": "+33 1 45 20 15 10",
+      "avatarColor": "#db2777",
+      "profileType": "DOCTOR",
+      "isActive": true,
+      "roleIds": ["role-medecin"],
+      "doctorProfile": {
+        "id": "doc-khelifi",
+        "departmentId": "dept-gynecologie",
+        "rppsNumber": "RPPS-10004582106",
+        "specialty": "Chirurgie Gynécologique",
+        "grade": "Praticien Hospitalier",
+        "availability": "DISPONIBLE",
+        "bio": "Prise en charge des urgences gynécologiques et chirurgie pelvienne."
+      }
+    },
+    {
+      "id": "user-inf-haddad",
+      "email": "inf.haddad@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Inf. Nadia Haddad",
+      "phone": "+33 1 45 20 11 40",
+      "avatarColor": "#0d9488",
+      "profileType": "NURSE",
+      "isActive": true,
+      "roleIds": ["role-infirmier"],
+      "nurseProfile": {
+        "id": "nurse-haddad",
+        "departmentId": "dept-dechocage",
+        "matricule": "IDE-2021-104",
+        "shift": "MATIN",
+        "qualification": "IDE Urgences & Déchocage (IOA)"
+      }
+    },
+    {
+      "id": "user-inf-chevalier",
+      "email": "inf.chevalier@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Inf. Julie Chevalier",
+      "phone": "+33 1 45 20 15 62",
+      "avatarColor": "#14b8a6",
+      "profileType": "NURSE",
+      "isActive": true,
+      "roleIds": ["role-infirmier"],
+      "nurseProfile": {
+        "id": "nurse-chevalier",
+        "departmentId": "dept-maternite",
+        "matricule": "IDE-2022-219",
+        "shift": "APRES_MIDI",
+        "qualification": "Infirmière Puéricultrice Maternité / Néonat"
+      }
+    },
+    {
+      "id": "user-inf-petit",
+      "email": "inf.petit@e-hospia.fr",
+      "password": "demo",
+      "fullName": "Inf. Thomas Petit",
+      "phone": "+33 1 45 20 12 45",
+      "avatarColor": "#0891b2",
+      "profileType": "NURSE",
+      "isActive": true,
+      "roleIds": ["role-infirmier"],
+      "nurseProfile": {
+        "id": "nurse-petit",
+        "departmentId": "dept-reanimation",
+        "matricule": "IDE-2020-087",
+        "shift": "NUIT",
+        "qualification": "IDE Soins Intensifs & Réanimation"
+      }
+    },
+    {
+      "id": "user-finance",
+      "email": "finance@e-hospia.fr",
+      "password": "demo",
+      "fullName": "M. Rachid El Amrani",
+      "phone": "+33 1 45 20 18 00",
+      "avatarColor": "#16a34a",
+      "profileType": "FINANCIAL",
+      "isActive": true,
+      "roleIds": ["role-finance"],
+      "financialProfile": {
+        "id": "fin-1",
+        "matricule": "FIN-2018-012",
+        "title": "Responsable Facturation & Tiers-Payant",
+        "billingUnit": "Direction Administrative et Financière",
+        "authorizationLimit": 50000
+      }
+    },
+    {
+      "id": "user-pat-yasmine",
+      "email": "yasmine.alaoui@patient.fr",
+      "password": "demo",
+      "fullName": "Mme. Yasmine Alaoui",
+      "phone": "+33 6 12 45 78 90",
+      "avatarColor": "#e11d48",
+      "profileType": "PATIENT",
+      "isActive": true,
+      "roleIds": ["role-patient"],
+      "patientProfile": {
+        "id": "pat-yasmine",
+        "folderNumber": "DOS-2026-001",
+        "nationalId": "2 92 05 75 114 028 45",
+        "birthDate": "1992-05-14",
+        "gender": "Féminin",
+        "bloodType": "A+",
+        "allergies": "Pénicilline (urticaire sévère), Latex léger",
+        "chronicConditions": "Hypothyroïdie substituée (Levothyrox 50µg)",
+        "emergencyContactName": "M. Samir Alaoui (Conjoint)",
+        "emergencyContactPhone": "+33 6 12 45 78 91",
+        "insuranceProvider": "MGEN / CPAM Paris",
+        "insuranceNumber": "MUT-75014-88921"
+      }
+    },
+    {
+      "id": "user-pat-lucas",
+      "email": "lucas.fernandez@patient.fr",
+      "password": "demo",
+      "fullName": "M. Lucas Fernandez",
+      "phone": "+33 6 54 89 12 33",
+      "avatarColor": "#2563eb",
+      "profileType": "PATIENT",
+      "isActive": true,
+      "roleIds": ["role-patient"],
+      "patientProfile": {
+        "id": "pat-lucas",
+        "folderNumber": "DOS-2026-002",
+        "nationalId": "1 87 11 69 204 019 12",
+        "birthDate": "1987-11-23",
+        "gender": "Masculin",
+        "bloodType": "O-",
+        "allergies": "Aucune allergie médicamenteuse connue",
+        "chronicConditions": "Asthme léger intermittent",
+        "emergencyContactName": "Mme. Elena Fernandez (Sœur)",
+        "emergencyContactPhone": "+33 6 54 89 12 34",
+        "insuranceProvider": "Harmonie Mutuelle",
+        "insuranceNumber": "HM-69002-44109"
+      }
+    },
+    {
+      "id": "user-pat-leo",
+      "email": "leo.dubois@patient.fr",
+      "password": "demo",
+      "fullName": "Enfant Léo Dubois (4 ans)",
+      "phone": "+33 6 77 31 09 44",
+      "avatarColor": "#0284c7",
+      "profileType": "PATIENT",
+      "isActive": true,
+      "roleIds": ["role-patient"],
+      "patientProfile": {
+        "id": "pat-leo",
+        "folderNumber": "DOS-2026-003",
+        "nationalId": "1 22 03 75 108 044 89",
+        "birthDate": "2022-03-08",
+        "gender": "Masculin",
+        "bloodType": "B+",
+        "allergies": "Arachides",
+        "chronicConditions": "Terrain atopique",
+        "emergencyContactName": "Mme. Camille Dubois (Mère)",
+        "emergencyContactPhone": "+33 6 77 31 09 44",
+        "insuranceProvider": "Alan Santé",
+        "insuranceNumber": "ALN-2022-99812"
+      }
+    },
+    {
+      "id": "user-pat-adam",
+      "email": "bebe.martin@patient.fr",
+      "password": "demo",
+      "fullName": "Nouveau-né Adam Martin",
+      "phone": "+33 6 88 10 22 30",
+      "avatarColor": "#14b8a6",
+      "profileType": "PATIENT",
+      "isActive": true,
+      "roleIds": ["role-patient"],
+      "patientProfile": {
+        "id": "pat-adam",
+        "folderNumber": "DOS-2026-004",
+        "nationalId": "1 26 11 75 112 001 07",
+        "birthDate": "2026-11-12",
+        "gender": "Masculin",
+        "bloodType": "O+",
+        "allergies": "Aucune identifiée",
+        "chronicConditions": "Prématurité modérée (33 SA + 4j)",
+        "emergencyContactName": "Mme. Clara Martin (Mère)",
+        "emergencyContactPhone": "+33 6 88 10 22 30",
+        "insuranceProvider": "CPAM / Rattachement Maternel",
+        "insuranceNumber": "CPAM-75-33219"
+      }
+    }
+  ],
+  "medicalCases": [
+    {
+      "id": "case-101",
+      "caseNumber": "CAS-2026-101",
+      "patientId": "pat-yasmine",
+      "departmentId": "dept-maternite",
+      "leadDoctorId": "doc-laurent",
+      "title": "Suivi grossesse gémellaire à haut risque (34 SA)",
+      "problemCategory": "Obstétrique & Maternité",
+      "diagnosis": "Grossesse gémellaire monochoriale biamniotique avec menace d'accouchement prématuré",
+      "symptoms": "Contractions utérines irrégulières, col raccourci à 18 mm, œdèmes des membres inférieurs",
+      "treatmentPlan": "Repos strict hospitalier, maturation pulmonaire fœtale (Célestène), monitoring biquotidien et anticipation néonatale.",
+      "status": "EN_OBSERVATION",
+      "priority": "HAUTE",
+      "roomBed": "MAT-402-A",
+      "openedAt": "2026-11-15T09:15:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-101-1",
+          "doctorId": "doc-laurent",
+          "roleInCase": "Obstétricienne Référente"
+        },
+        {
+          "id": "assign-101-2",
+          "doctorId": "doc-moreau",
+          "roleInCase": "Néonatologue Consultant (Préparation accueil prématurés)"
+        },
+        {
+          "id": "assign-101-3",
+          "doctorId": "doc-khelifi",
+          "roleInCase": "Chirurgien Gynécologue de garde"
+        }
+      ],
+      "clinicalNotes": [
+        {
+          "id": "note-101-1",
+          "authorUserId": "user-dr-laurent",
+          "authorName": "Dr. Sophie Laurent",
+          "authorRole": "Médecin Spécialiste",
+          "noteType": "OBSERVATION",
+          "content": "Échographie de contrôle à 34 SA : bonne vitalité des deux jumeaux. Planification d'une concertation avec la Néonatologie.",
+          "prescriptionDetails": "Célestène 12mg IM x2 à 24h d'intervalle + Spasfon IV si contractions.",
+          "createdAt": "2026-11-16T10:30:00.000Z"
+        },
+        {
+          "id": "note-101-2",
+          "authorUserId": "user-dr-moreau",
+          "authorName": "Dr. Claire Moreau",
+          "authorRole": "Médecin Spécialiste",
+          "noteType": "CONSEIL_SPECIALISTE",
+          "content": "2 couveuses pré-réservées en Néonatologie en cas de déclenchement précoce. Entretien d'information effectué avec la patiente.",
+          "prescriptionDetails": null,
+          "createdAt": "2026-11-17T14:20:00.000Z"
+        }
+      ],
+      "vitalSignLogs": [
+        {
+          "id": "vital-101-1",
+          "recordedByName": "Inf. Julie Chevalier",
+          "bloodPressure": "135/85",
+          "heartRate": 88,
+          "temperature": 36.9,
+          "oxygenSaturation": 99,
+          "notes": "RCF jumeaux réactif et rassurant.",
+          "recordedAt": "2026-11-18T08:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "case-102",
+      "caseNumber": "CAS-2026-102",
+      "patientId": "pat-yasmine",
+      "departmentId": "dept-urgence",
+      "leadDoctorId": "doc-mansouri",
+      "title": "Poussée hypertensive gravidique & céphalées aiguës",
+      "problemCategory": "Urgence Cardiovasculaire / Pré-éclampsie",
+      "diagnosis": "Suspicion de pré-éclampsie modérée en cours de bilan biologique",
+      "symptoms": "Tension artérielle à 165/102 mmHg à l'admission, phosphènes transitoires, céphalées frontales",
+      "treatmentPlan": "Nicardipine (Loxen) IVSE titrée, bilan hépatique/rénal + protéinurie, surveillance scopée en lien avec Maternité.",
+      "status": "CRITIQUE",
+      "priority": "URGENCE_VITALE",
+      "roomBed": "URG-BOX-03",
+      "openedAt": "2026-11-18T06:40:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-102-1",
+          "doctorId": "doc-mansouri",
+          "roleInCase": "Urgentiste Responsable"
+        },
+        {
+          "id": "assign-102-2",
+          "doctorId": "doc-laurent",
+          "roleInCase": "Co-suivi Obstétrical"
+        }
+      ],
+      "clinicalNotes": [
+        {
+          "id": "note-102-1",
+          "authorUserId": "user-dr-mansouri",
+          "authorName": "Dr. Karim Mansouri",
+          "authorRole": "Chef de Service Médical",
+          "noteType": "PRESCRIPTION",
+          "content": "Stabilisation tensionnelle prioritaire avant retour en unité grossesses à haut risque.",
+          "prescriptionDetails": "Loxen IVSE 1 mg/h à adapter pour PAS < 150 mmHg. Bilan pré-éclampsie en urgence.",
+          "createdAt": "2026-11-18T07:05:00.000Z"
+        }
+      ],
+      "vitalSignLogs": [
+        {
+          "id": "vital-102-1",
+          "recordedByName": "Inf. Nadia Haddad",
+          "bloodPressure": "152/94",
+          "heartRate": 96,
+          "temperature": 37.1,
+          "oxygenSaturation": 98,
+          "notes": "Décroissance progressive de la PA sous Loxen.",
+          "recordedAt": "2026-11-18T09:15:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "case-103",
+      "caseNumber": "CAS-2026-103",
+      "patientId": "pat-yasmine",
+      "departmentId": "dept-psychiatrie",
+      "leadDoctorId": "doc-garnier",
+      "title": "Accompagnement anxiété périnatale aiguë",
+      "problemCategory": "Psychiatrie de Liaison",
+      "diagnosis": "Trouble anxieux réactionnel lié à l'hospitalisation prolongée et risque de prématurité",
+      "symptoms": "Crises d'angoisse nocturnes, insomnie d'endormissement, hypervigilance",
+      "treatmentPlan": "Entretiens de soutien bihebdomadaires au lit de la patiente, relaxation guidée sans benzodiazépines.",
+      "status": "ACTIF",
+      "priority": "NORMALE",
+      "roomBed": "Liaison Maternité",
+      "openedAt": "2026-11-16T15:00:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-103-1",
+          "doctorId": "doc-garnier",
+          "roleInCase": "Psychiatre Référent"
+        }
+      ],
+      "clinicalNotes": [
+        {
+          "id": "note-103-1",
+          "authorUserId": "user-dr-garnier",
+          "authorName": "Dr. Antoine Garnier",
+          "authorRole": "Médecin Spécialiste",
+          "noteType": "OBSERVATION",
+          "content": "Patiente coopérante et rassurée après l'entretien conjoint avec l'équipe de néonatologie. Pas de traitement psychotrope nécessaire.",
+          "prescriptionDetails": null,
+          "createdAt": "2026-11-17T16:45:00.000Z"
+        }
+      ],
+      "vitalSignLogs": []
+    },
+    {
+      "id": "case-201",
+      "caseNumber": "CAS-2026-201",
+      "patientId": "pat-lucas",
+      "departmentId": "dept-reanimation",
+      "leadDoctorId": "doc-benali",
+      "title": "Polytraumatisme thoracique & crânien (Post-Déchocage)",
+      "problemCategory": "Traumatologie & Réanimation",
+      "diagnosis": "Contusion pulmonaire bilatérale + fracture de 3 côtes + traumatisme crânien modéré",
+      "symptoms": "Hypoxémie initiale corrigée sous VNI, douleur thoracique intense, agitation post-traumatique",
+      "treatmentPlan": "Ventilation non invasive (VNI), analgésie multimodale PCA Morphine, TDM cérébral de contrôle à H24.",
+      "status": "CRITIQUE",
+      "priority": "URGENCE_VITALE",
+      "roomBed": "REA-LIT-07",
+      "openedAt": "2026-11-17T03:10:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-201-1",
+          "doctorId": "doc-benali",
+          "roleInCase": "Réanimateur Référent"
+        },
+        {
+          "id": "assign-201-2",
+          "doctorId": "doc-mansouri",
+          "roleInCase": "Médecin Déchocage Initial"
+        }
+      ],
+      "clinicalNotes": [
+        {
+          "id": "note-201-1",
+          "authorUserId": "user-dr-benali",
+          "authorName": "Dr. Mehdi Benali",
+          "authorRole": "Chef de Service Médical",
+          "noteType": "OBSERVATION",
+          "content": "Patient admis depuis le Déchocage après pose de drain thoracique droit. Hémodynamique stable sous surveillance continue.",
+          "prescriptionDetails": null,
+          "createdAt": "2026-11-17T05:30:00.000Z"
+        }
+      ],
+      "vitalSignLogs": [
+        {
+          "id": "vital-201-1",
+          "recordedByName": "Inf. Thomas Petit",
+          "bloodPressure": "118/74",
+          "heartRate": 102,
+          "temperature": 37.4,
+          "oxygenSaturation": 95,
+          "notes": "Sous VNI FiO2 45%. Douleur évaluée à 3/10.",
+          "recordedAt": "2026-11-18T07:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "case-202",
+      "caseNumber": "CAS-2026-202",
+      "patientId": "pat-lucas",
+      "departmentId": "dept-psychiatrie",
+      "leadDoctorId": "doc-garnier",
+      "title": "Évaluation stress post-traumatique post-accident",
+      "problemCategory": "Psychiatrie de Liaison",
+      "diagnosis": "État de stress aigu post-AVP",
+      "symptoms": "Cauchemars récurrents, flash-backs de l'accident, hyperréactivité",
+      "treatmentPlan": "Suivi psychothérapeutique dès sortie de réanimation.",
+      "status": "EN_OBSERVATION",
+      "priority": "NORMALE",
+      "roomBed": null,
+      "openedAt": "2026-11-17T16:00:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-202-1",
+          "doctorId": "doc-garnier",
+          "roleInCase": "Psychiatre Consultant"
+        }
+      ],
+      "clinicalNotes": [],
+      "vitalSignLogs": []
+    },
+    {
+      "id": "case-301",
+      "caseNumber": "CAS-2026-301",
+      "patientId": "pat-leo",
+      "departmentId": "dept-pediatrie",
+      "leadDoctorId": "doc-moreau",
+      "title": "Détresse respiratoire aiguë sur bronchiolite sévère",
+      "problemCategory": "Pneumo-Pédiatrie",
+      "diagnosis": "Bronchiolite aiguë VRS+ avec tirage intercostal",
+      "symptoms": "Polypnée à 48/min, sibilants diffus, difficulté alimentaire",
+      "treatmentPlan": "Oxygénothérapie haut débit (Optiflow), désobstruction rhinopharyngée, hydratation IV.",
+      "status": "ACTIF",
+      "priority": "HAUTE",
+      "roomBed": "PED-CH-12",
+      "openedAt": "2026-11-17T19:20:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-301-1",
+          "doctorId": "doc-moreau",
+          "roleInCase": "Pédiatre Référente"
+        },
+        {
+          "id": "assign-301-2",
+          "doctorId": "doc-benali",
+          "roleInCase": "Avis Réanimation Pédiatrique"
+        }
+      ],
+      "clinicalNotes": [],
+      "vitalSignLogs": [
+        {
+          "id": "vital-301-1",
+          "recordedByName": "Inf. Julie Chevalier",
+          "bloodPressure": "95/60",
+          "heartRate": 132,
+          "temperature": 38.2,
+          "oxygenSaturation": 96,
+          "notes": "Amélioration sous Optiflow.",
+          "recordedAt": "2026-11-18T08:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "case-401",
+      "caseNumber": "CAS-2026-401",
+      "patientId": "pat-adam",
+      "departmentId": "dept-neonat",
+      "leadDoctorId": "doc-moreau",
+      "title": "Surveillance prématurité & couveuse (33 SA + 4j)",
+      "problemCategory": "Néonatologie",
+      "diagnosis": "Prématurité modérée avec ictère néonatal simple",
+      "symptoms": "Immaturité de succion-déglutition, ictère cutané modéré",
+      "treatmentPlan": "Incubateur thermorégulé, photothérapie continue, nutrition entérale par sonde gastrique.",
+      "status": "ACTIF",
+      "priority": "HAUTE",
+      "roomBed": "NEO-COUVEUSE-04",
+      "openedAt": "2026-11-12T11:00:00.000Z",
+      "closedAt": null,
+      "assignedDoctors": [
+        {
+          "id": "assign-401-1",
+          "doctorId": "doc-moreau",
+          "roleInCase": "Néonatologue Référente"
+        }
+      ],
+      "clinicalNotes": [],
+      "vitalSignLogs": []
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-1",
+      "fromDepartmentId": "dept-urgence",
+      "toDepartmentId": "dept-maternite",
+      "senderUserId": "user-dr-mansouri",
+      "senderName": "Dr. Karim Mansouri",
+      "senderRole": "Chef de Pôle Urgences",
+      "medicalCaseId": "case-102",
+      "subject": "URGENT — Stabilisation TA Mme. Yasmine Alaoui",
+      "content": "Mme Alaoui (34 SA gémellaire) est actuellement sous Loxen IVSE en Box 3 des Urgences pour poussée à 165/102. Merci au Dr Laurent de confirmer le créneau de rapatriement en Maternité dès stabilisation < 145/90.",
+      "messageType": "ALERTE_URGENCE",
+      "priority": "CRITIQUE",
+      "status": "NON_LU",
+      "createdAt": "2026-11-18T11:20:00.000Z"
+    },
+    {
+      "id": "msg-2",
+      "fromDepartmentId": "dept-maternite",
+      "toDepartmentId": "dept-neonat",
+      "senderUserId": "user-dr-laurent",
+      "senderName": "Dr. Sophie Laurent",
+      "senderRole": "Obstétricienne",
+      "medicalCaseId": "case-101",
+      "subject": "Pré-réservation 2 couveuses — Grossesse gémellaire Alaoui",
+      "content": "Maturation pulmonaire débutée ce jour à 34 SA. Risque d'extraction prématurée dans les 48-72h selon évolution tensionnelle. Pouvez-vous confirmer la disponibilité de 2 places en Néonatologie ?",
+      "messageType": "DISPONIBILITE_LIT",
+      "priority": "URGENTE",
+      "status": "TRAITE",
+      "createdAt": "2026-11-18T10:05:00.000Z"
+    },
+    {
+      "id": "msg-3",
+      "fromDepartmentId": "dept-dechocage",
+      "toDepartmentId": "dept-reanimation",
+      "senderUserId": "user-inf-haddad",
+      "senderName": "Inf. Nadia Haddad",
+      "senderRole": "IDE Déchocage",
+      "medicalCaseId": "case-201",
+      "subject": "Transmission dossier biologique complet — Lucas Fernandez",
+      "content": "Les gaz du sang et le body-scanner de M. Fernandez ont été joints au dossier CAS-2026-201 avant son arrivée en Réa Lit 07.",
+      "messageType": "COORDINATION",
+      "priority": "NORMALE",
+      "status": "LU",
+      "createdAt": "2026-11-18T09:30:00.000Z"
+    },
+    {
+      "id": "msg-4",
+      "fromDepartmentId": "dept-pediatrie",
+      "toDepartmentId": "dept-reanimation",
+      "senderUserId": "user-dr-moreau",
+      "senderName": "Dr. Claire Moreau",
+      "senderRole": "Pédiatre",
+      "medicalCaseId": "case-301",
+      "subject": "Demande d'avis Réa — Enfant Léo Dubois (Optiflow)",
+      "content": "Enfant de 4 ans sous Optiflow à 2L/kg/min, légère baisse de SpO2 à 93% lors des soins. Un réanimateur peut-il passer évaluer les critères de transfert éventuel ?",
+      "messageType": "AVIS_SPECIALISTE",
+      "priority": "URGENTE",
+      "status": "NON_LU",
+      "createdAt": "2026-11-18T11:45:00.000Z"
+    },
+    {
+      "id": "msg-5",
+      "fromDepartmentId": "dept-maternite",
+      "toDepartmentId": "dept-psychiatrie",
+      "senderUserId": "user-dr-laurent",
+      "senderName": "Dr. Sophie Laurent",
+      "senderRole": "Obstétricienne",
+      "medicalCaseId": "case-103",
+      "subject": "Merci pour la prise en charge rapide en psychiatrie de liaison",
+      "content": "Mme Alaoui est nettement plus apaisée depuis le passage du Dr Garnier. Poursuivre le suivi conjoint.",
+      "messageType": "COORDINATION",
+      "priority": "NORMALE",
+      "status": "LU",
+      "createdAt": "2026-11-17T18:10:00.000Z"
+    }
+  ],
+  "transfers": [
+    {
+      "id": "tr-1",
+      "medicalCaseId": "case-102",
+      "fromDepartmentId": "dept-urgence",
+      "toDepartmentId": "dept-maternite",
+      "requestedByUserId": "user-dr-mansouri",
+      "requestedByName": "Dr. Karim Mansouri",
+      "targetDoctorId": "doc-laurent",
+      "reason": "Retour vers l'unité Grossesses à Haut Risque après stabilisation tensionnelle",
+      "clinicalSummary": "TA stabilisée à 142/88 sous nicardipine orale de relais. Bilan biologique sans syndrome HELLP.",
+      "priority": "URGENTE",
+      "status": "EN_ATTENTE",
+      "createdAt": "2026-11-18T11:50:00.000Z",
+      "resolvedAt": null
+    },
+    {
+      "id": "tr-2",
+      "medicalCaseId": "case-301",
+      "fromDepartmentId": "dept-pediatrie",
+      "toDepartmentId": "dept-reanimation",
+      "requestedByUserId": "user-dr-moreau",
+      "requestedByName": "Dr. Claire Moreau",
+      "targetDoctorId": "doc-benali",
+      "reason": "Surveillance rapprochée si majoration du travail respiratoire sous VNI/Optiflow",
+      "clinicalSummary": "Bronchiolite sévère à VRS, enfant de 4 ans, SpO2 95-96% sous Optiflow.",
+      "priority": "NORMALE",
+      "status": "EN_ATTENTE",
+      "createdAt": "2026-11-18T11:55:00.000Z",
+      "resolvedAt": null
+    },
+    {
+      "id": "tr-3",
+      "medicalCaseId": "case-201",
+      "fromDepartmentId": "dept-dechocage",
+      "toDepartmentId": "dept-reanimation",
+      "requestedByUserId": "user-dr-mansouri",
+      "requestedByName": "Dr. Karim Mansouri",
+      "targetDoctorId": "doc-benali",
+      "reason": "Poursuite de la réanimation post-polytraumatisme thoracique",
+      "clinicalSummary": "Drainage thoracique réalisé en SAUV, transfert effectué en Lit REA-07.",
+      "priority": "VITALE",
+      "status": "ACCEPTE",
+      "createdAt": "2026-11-17T03:30:00.000Z",
+      "resolvedAt": "2026-11-17T03:45:00.000Z"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "inv-1",
+      "invoiceNumber": "FAC-2026-0891",
+      "patientId": "pat-yasmine",
+      "medicalCaseId": "case-101",
+      "departmentId": "dept-maternite",
+      "description": "Hospitalisation Grossesse Haut Risque (4 jours) + Échographies spécialisées + Corticothérapie",
+      "totalAmount": 2850,
+      "insuranceCovered": 2565,
+      "patientResponsibility": 285,
+      "status": "PRISE_EN_CHARGE",
+      "handledByUserId": "user-finance",
+      "issuedAt": "2026-11-16T14:00:00.000Z",
+      "paidAt": null
+    },
+    {
+      "id": "inv-2",
+      "invoiceNumber": "FAC-2026-0892",
+      "patientId": "pat-yasmine",
+      "medicalCaseId": "case-102",
+      "departmentId": "dept-urgence",
+      "description": "Passage Urgences SAUV + Monitoring cardiovasculaire + Bilan biologique complet",
+      "totalAmount": 640,
+      "insuranceCovered": 512,
+      "patientResponsibility": 128,
+      "status": "EN_ATTENTE",
+      "handledByUserId": "user-finance",
+      "issuedAt": "2026-11-18T09:00:00.000Z",
+      "paidAt": null
+    },
+    {
+      "id": "inv-3",
+      "invoiceNumber": "FAC-2026-0893",
+      "patientId": "pat-lucas",
+      "medicalCaseId": "case-201",
+      "departmentId": "dept-reanimation",
+      "description": "Forfait Réanimation Polyvalente (3 jours) + Body-Scanner + Drainage thoracique",
+      "totalAmount": 6420,
+      "insuranceCovered": 6420,
+      "patientResponsibility": 0,
+      "status": "PAYEE",
+      "handledByUserId": "user-finance",
+      "issuedAt": "2026-11-17T12:00:00.000Z",
+      "paidAt": "2026-11-17T15:00:00.000Z"
+    },
+    {
+      "id": "inv-4",
+      "invoiceNumber": "FAC-2026-0894",
+      "patientId": "pat-leo",
+      "medicalCaseId": "case-301",
+      "departmentId": "dept-pediatrie",
+      "description": "Hospitalisation Pédiatrie + Oxygénothérapie haut débit Optiflow",
+      "totalAmount": 1180,
+      "insuranceCovered": 1062,
+      "patientResponsibility": 118,
+      "status": "EN_ATTENTE",
+      "handledByUserId": "user-finance",
+      "issuedAt": "2026-11-18T08:30:00.000Z",
+      "paidAt": null
+    }
+  ],
+  "aiSettings": {
+    "activeModelId": "model-ehospia-clinical",
+    "hospitalSystemPrompt": "Vous êtes l'Assistant IA officiel d'E-HOSPIA. Respectez strictement le cloisonnement RBAC et le secret médical.",
+    "temperature": 0.2,
+    "models": [
+      {
+        "id": "model-ehospia-clinical",
+        "name": "E-HOSPIA Clinical Copilot v2",
+        "provider": "LOCAL_DEMO",
+        "modelId": "ehospia-clinical-v2",
+        "endpoint": "local://ehospia-json-engine",
+        "apiKey": "",
+        "description": "Moteur clinique RBAC local fonctionnant directement sur ehospia-data.json sans clé API.",
+        "addedBy": "Système E-HOSPIA",
+        "createdAt": "2026-11-18T08:00:00.000Z"
+      },
+      {
+        "id": "model-gemini-flash",
+        "name": "Google Gemini 2.5 Flash",
+        "provider": "GOOGLE_GEMINI",
+        "modelId": "gemini-2.5-flash",
+        "endpoint": "https://generativelanguage.googleapis.com/v1beta",
+        "apiKey": "",
+        "description": "Modèle multimodal rapide Google Gemini pour la synthèse clinique et la coordination.",
+        "addedBy": "Hélène Valéry",
+        "createdAt": "2026-11-18T08:05:00.000Z"
+      },
+      {
+        "id": "model-gpt-4o",
+        "name": "OpenAI GPT-4o Medical",
+        "provider": "OPENAI_COMPATIBLE",
+        "modelId": "gpt-4o",
+        "endpoint": "https://api.openai.com/v1",
+        "apiKey": "",
+        "description": "Modèle haute précision compatible OpenAI pour l'aide au diagnostic et la rédaction.",
+        "addedBy": "Hélène Valéry",
+        "createdAt": "2026-11-18T08:10:00.000Z"
+      },
+      {
+        "id": "model-ollama-local",
+        "name": "Ollama Qwen 3.5 (4B Local)",
+        "provider": "OLLAMA_LOCAL",
+        "modelId": "qwen3.5:4b",
+        "endpoint": "http://localhost:11434/v1",
+        "apiKey": "",
+        "description": "Modèle souverain hébergé localement sur Ollama (http://localhost:11434) sans clé API.",
+        "addedBy": "Hélène Valéry",
+        "createdAt": "2026-11-18T08:15:00.000Z"
+      }
+    ]
+  }
+}
